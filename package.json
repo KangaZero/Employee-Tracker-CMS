@@ -1,0 +1,24 @@
+{
+  "name": "employee-tracker-cms",
+  "version": "1.0.0",
+  "description": "A CMS to keep track of, update, delete, and view employees",
+  "main": "server.js",
+  "scripts": {
+    "test": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KangaZero/Employee-Tracker-CMS.git"
+  },
+  "keywords": [
+    "console.table",
+    "mysql2",
+    "inquirer"
+  ],
+  "author": "Samuel Wai Weng Yong (KangaZero)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KangaZero/Employee-Tracker-CMS/issues"
+  },
+  "homepage": "https://github.com/KangaZero/Employee-Tracker-CMS#readme"
+}
