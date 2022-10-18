@@ -1,4 +1,5 @@
 // NPMs
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
@@ -12,12 +13,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 //MYSQL employee_db database connects upon starting server.js
-const db = mysql.createConnection(
+const db = mysql.createConnection( 
   {
     host: 'localhost',
-    user: 'root',
-    password: '12345',
-    database: 'employee_db'
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    //database: employee_db
+    database: process.env.DATABASE,
   },
   console.log(`Connected to the employee_db database.`)
 );
