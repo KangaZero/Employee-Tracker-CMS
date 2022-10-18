@@ -38,7 +38,8 @@ const queryDb = (...args) => new Promise((resolve, reject) => {
 
 const queryDbSimplified = (...args) => { 
     queryDb(...args)
-        .then(results => console.table(results))
+    // `\n` added to avoid table rendering alongside confirm inquirer prompt
+        .then(results => console.table(`\n`, results))
         .catch(err => console.error(err))
 };
 
@@ -75,7 +76,6 @@ inquirer
                       'View employees', 'View managers', 'debug']
         }
     ]).then(answers => {
-        // console.log(answers.option)
         switch (answers.option) {
              case "View departments":
                 queryDbSimplified(showDepartmentsQuery);
@@ -91,10 +91,10 @@ inquirer
                 break;
             default: 
                 console.error("Oops something went wrong!\nLet's try that again.")
-                cmsInquirer();
-            } //TODO fix next line, askAgain() appears before console.table, interfering the data layout
+            }
         }).then(response => askAgain());
 }
+
 
 const askAgain = () => {
 inquirer
@@ -105,10 +105,20 @@ inquirer
             message: 'Would you like to continue using the CMS?\n'
         },
     ]).then((confirm) => {
-       confirm.confirm ? cmsInquirer() : console.log("Thanks for using KangaZero's Employee Tracker CMS!\n See you next time!") 
+        //if user types Yes
+       if (confirm.confirm) {
+           //Run cmsInquirer() again
+           cmsInquirer()  
+       } else {
+       //else console.log this, and end node server.js 
+       console.log("Thanks for using KangaZero's Employee Tracker CMS!\n See you next time!"); 
+       process.exit();
+       }
     })
 }
 
 
 //Runs inquirer upon starting server.js
 cmsInquirer();
+
+
