@@ -11,7 +11,7 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-//MYSQL employee_db database connected
+//MYSQL employee_db database connects upon starting server.js
 const db = mysql.createConnection(
   {
     host: 'localhost',
@@ -33,6 +33,13 @@ const queryDb = (...args) => new Promise((resolve, reject) => {
     })
 });
 
+
+const queryDbSimplified = (...args) => { 
+    queryDb(...args)
+        .then(results => console.table(results))
+        .catch(err => console.error(err))
+};
+
 //TODO add queries for View employees by department, 
 //TODO Update employee managers, 
 //TODO Delete departments, roles, and employees., 
@@ -48,9 +55,6 @@ AND manager_id = employee.id
 GROUP BY manager_id;`
 
 
-
-
-
 //Inquirer
 const CmsInquirer = () => {
 inquirer
@@ -59,15 +63,16 @@ inquirer
             type: 'list',
             name: 'option',
             message: 'What would you like to do?',
-            choices: ['View managers']
+            choices: ['View departments', 'View roles', 
+                      'View employees', 'View managers']
         }
     ]).then(answers => {
         // console.log(answers.option)
         switch (answers.option) {
+            // case "View departments":
+                
             case "View managers":
-                queryDb(showManagersQuery)
-                    .then(results => console.table(results))
-                    .catch(err => console.error(err))
+                queryDbSimplified(showManagersQuery);
                 break;
             default: 
                 console.error("Oops something went wrong!\nLet's try that again.")
@@ -76,4 +81,5 @@ inquirer
     });
 }   
 
+//Runs inquirer upon starting server.js
 CmsInquirer();
