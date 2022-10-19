@@ -44,16 +44,22 @@ const queryDbSimplified = (...args) => {
 
 
 //Update Queries 
-const updateEmployeeLNameQuery =  `
-UPDATE employee
-SET last_name = ?
-where id = ? OR first_name = ? OR last_name = ?
-`
+// const updateEmployeeLNameQuery =  `
+// UPDATE employee
+// SET last_name = ?
+// where id = ? OR first_name = ? OR last_name = ?
+// `
 
-const updateEmployeeFNameQuery = `
-UPDATE employee
-SET first_name = ?
-where id = ? OR first_name = ? OR last_name = ?
+// const updateEmployeeFNameQuery = `
+// UPDATE employee
+// SET first_name = ?
+// where id = ? OR first_name = ? OR last_name = ?
+// `
+
+const updateEmployeeNameQuery = (updateQuery, conditionQuery, value) => `
+UPDATE employee AS e
+SET e.${updateQuery} = ?
+WHERE ${conditionQuery} = ${value}
 `
 //Database ID number
 const telecommunications = 1
@@ -63,10 +69,28 @@ const security = 4
 const software = 5
 
 //update by first_name || last_name || id
-const updateEmployeeDepartment = `
+const updateEmployeeDepartment = (id, query) => `
+UPDATE employee AS e, role AS r
+SET r.department_id = ${id}
+WHERE e.${query} = ? AND e.role_id = r.id ;
+`
+
+const updateEmployeeTitleToManager = `
 UPDATE employee as e, role as r
-SET r.department_id = ${telecommunications}
-WHERE e.first_name= ? OR e.last_name = ?  OR e.id = ? AND e.role_id = r.id ;
+SET e.manager_id = ?
+WHERE e.id = ? AND e.role_id = r.id;
+UPDATE employee as e, role as r
+SET r.title = 'manager'
+WHERE e.id = ? AND e.role_id = r.id;
+`
+
+const updateEmployeeTitleToEmployee = `
+UPDATE UPDATE employee as e, role as r
+SET e.manager_id = NULL
+WHERE e.id = ? AND e.role_id = r.id;
+UPDATE employee as e, role as r
+SET r.title = 'employee'
+WHERE e.id = ? AND e.role_id = r.id;
 `
 
 //Delete Queries
@@ -115,9 +139,9 @@ const showEmployeesQuery = `SELECT id, first_name, last_name, role_id, manager_i
 
 //works
 const showTotalBudgetbyDeparmentQuery = `
-SELECT name as department, sum(salary) as total_budget
-from role
-join department
+SELECT name as department, sum(salary) AS total_budget
+FROM role
+JOIN department
 ON role.department_id = department.id
 AND department.name = ?
 `
@@ -133,6 +157,11 @@ ON role.department_id = department.id
 AND department.name = ?
 `
 
+const isValidEmployeeQuery = (query) => `
+SELECT * 
+FROM employee
+where ${query} = ?
+`
 //Inquirer
 const cmsInquirer = () => {
 inquirer
@@ -141,11 +170,13 @@ inquirer
             type: 'list',
             name: 'option',
             message: 'What would you like to do?',
-            choices: ['View', 'Update', 
+            choices: ['View', 'Update Employee', 
                       'Delete', 'Search', 'debug', 'Exit']
         }
     ]).then(answer => {
-        if (answer.option = "View") {
+          //TODO delete once debug done
+        console.log(answer)
+        if (answer.option == "View") {
             const viewOptions = () => { 
 inquirer
     .prompt([
@@ -208,6 +239,68 @@ inquirer
        }).then(response => askAgain());
     }
     viewOptions();
+        }
+        else if (answer.option == "Update Employee") {
+            const updateOptions = () => {
+inquirer
+    .prompt([
+        {
+            type: 'list',
+            name: 'employeeProp',
+            message: "Pick search term for employee",
+            choices: ['id', 'first_name', 'last_name']
+        }
+    ]).then(choice => {
+        console.log(choice.employeeProp)
+inquirer
+    .prompt([
+        {
+            type: 'input',
+            name: 'employeeValue',
+            message: `Enter employee's ${choice.employeeProp} `
+        }
+    ]).then(input => {
+          //TODO delete once debug done
+        console.log(input.employeeValue)
+         const isValidEmployee = queryDbSimplified(isValidEmployeeQuery(choice.employeeProp), input.employeeValue)
+        // if(isValidEmployee) {
+             console.table(isValidEmployee)
+inquirer
+    .prompt([
+        {
+            type: 'list',
+            name: 'updateQuery',
+            message: 'What would you like to update for this employee?',
+            choices: ['first_name', 'last_name', 'salary', 'title', 'department']
+        }
+    ]).then(updateQuery => {
+       //TODO delete once debug done
+        console.log(updateQuery.updateQuery)
+inquirer
+    .prompt([
+        {
+            type:'input',
+            name:'updateValue',
+            message: `Input change for employee's ${updateQuery.updateQuery}`
+        }
+    ]).then(updateValue => {
+        //TODO delete once debug done
+        console.log(updateValue.updateValue)
+        switch (updateQuery.updateQuery) {
+                    case 'first_name': case 'last_name': 
+                        queryDbSimplified(updateEmployeeNameQuery(updateQuery.updateQuery, choice.employeeProp, input.employeeValue), updateValue.updateValue)
+                    break;
+                    case 'salary': case 'title':
+
+                    break;
+                }
+    })
+    })
+     //   } 
+    })
+   });
+};
+    updateOptions();
         }
      else{
         console.log("add Update Delete Search debug Exit'")

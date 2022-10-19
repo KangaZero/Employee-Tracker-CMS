@@ -40,7 +40,10 @@ SET r.department_id = 1
 WHERE e.first_name = "Stan" AND e.role_id = r.id ;
 
 
-
+-- Change name
+UPDATE employee
+SET r.first_name = ?
+WHERE id = ? OR first_name = ? or last_name = ?
 
 
 -- View All
@@ -49,6 +52,35 @@ from employee
 join role
 on employee.role_id = role.id
 join department
-ON role.department_id = department.id
+ON role.department_id = department.id;
 
 
+-- If employee exits
+SELECT * 
+FROM employee
+where id = ? or first_name = ? or last_name = ?
+
+UPDATE employee as e, role as r, department as d
+SET d.name = "Telecommunications"
+WHERE e.first_name= ? OR e.last_name = ?  OR e.id = ? AND e.role_id = r.id ;
+
+-- Update salary
+UPDATE employee as e, role as r
+SET r.salary = 5
+WHERE e.id = 2 AND e.role_id = r.id
+
+-- Update title to manager
+UPDATE employee as e, role as r
+SET e.manager_id = 2
+WHERE e.id = 2 AND e.role_id = r.id;
+UPDATE employee as e, role as r
+SET r.title = 'manager'
+WHERE e.id = 2 AND e.role_id = r.id;
+
+-- Update title to employee
+UPDATE UPDATE employee as e, role as r
+SET e.manager_id = NULL
+WHERE e.id = 2 AND e.role_id = r.id;
+UPDATE employee as e, role as r
+SET r.title = 'employee'
+WHERE e.id = 2 AND e.role_id = r.id;
