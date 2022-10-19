@@ -55,42 +55,55 @@ const queryDbSimplified = (...args) => {
 // SET first_name = ?
 // where id = ? OR first_name = ? OR last_name = ?
 // `
-
-const updateEmployeeNameQuery = (updateQuery, conditionQuery, value) => `
+//works
+const updateEmployeeNameQuery = (updateProp, conditionProp, value) => `
 UPDATE employee AS e
-SET e.${updateQuery} = ?
-WHERE ${conditionQuery} = ${value}
+SET e.${updateProp} = ?
+WHERE e.${conditionProp} = '${parseInt(value)}'
 `
-//Database ID number
-const telecommunications = 1
-const troubleshooting = 2
-const database = 3 
-const security = 4 
-const software = 5
 
 //update by first_name || last_name || id
-const updateEmployeeDepartment = (id, query) => `
+const updateEmployeeDepartment = (id, conditionProp) => `
 UPDATE employee AS e, role AS r
 SET r.department_id = ${id}
-WHERE e.${query} = ? AND e.role_id = r.id ;
+WHERE e.${conditionProp} = ? AND e.role_id = r.id ;
+`
+//works
+const updateEmployeeSalary = (conditionProp, value) => `
+UPDATE employee as e, role as r
+SET r.salary = ?
+WHERE e.${conditionProp} = '${parseInt(value)}' AND e.role_id = r.id
 `
 
-const updateEmployeeTitleToManager = `
+// const updateEmployeeTitleToManager = (conditionProp) => `
+// UPDATE employee as e, role as r
+// SET e.manager_id = e.id
+// WHERE e.${conditionProp} = ? AND e.role_id = r.id;
+// UPDATE employee as e, role as r
+// SET r.title = 'manager'
+// WHERE e.${conditionProp} = ? AND e.role_id = r.id;
+// `
+const updateEmployeeTitleToManager1 = (conditionProp) => `
 UPDATE employee as e, role as r
-SET e.manager_id = ?
-WHERE e.id = ? AND e.role_id = r.id;
+SET e.manager_id = e.id
+WHERE e.${conditionProp} = ? AND e.role_id = r.id;
+`
+
+const updateEmployeeTitleToManager2 = (conditionProp) =>`
 UPDATE employee as e, role as r
 SET r.title = 'manager'
-WHERE e.id = ? AND e.role_id = r.id;
+WHERE e.${conditionProp} = ? AND e.role_id = r.id;
 `
 
-const updateEmployeeTitleToEmployee = `
-UPDATE UPDATE employee as e, role as r
+const updateEmployeeTitleToEmployee1 = (conditionProp) => `
+UPDATE employee as e, role as r
 SET e.manager_id = NULL
-WHERE e.id = ? AND e.role_id = r.id;
+WHERE e.${conditionProp} = ? AND e.role_id = r.id;
+`
+const updateEmployeeTitleToEmployee2 = (conditionProp) =>`
 UPDATE employee as e, role as r
 SET r.title = 'employee'
-WHERE e.id = ? AND e.role_id = r.id;
+WHERE e.${conditionProp} = ? AND e.role_id = r.id;
 `
 
 //Delete Queries
@@ -275,8 +288,10 @@ inquirer
         }
     ]).then(updateQuery => {
        //TODO delete once debug done
-        console.log(updateQuery.updateQuery)
-inquirer
+        console.log(updateQuery)
+        if (updateQuery.updateQuery == 'first_name' || updateQuery.updateQuery == 'last_name' || updateQuery.updateQuery == 'salary') {
+        const updateNameOrSalary = () => {
+            inquirer
     .prompt([
         {
             type:'input',
@@ -285,17 +300,87 @@ inquirer
         }
     ]).then(updateValue => {
         //TODO delete once debug done
-        console.log(updateValue.updateValue)
+        console.log(updateValue)
         switch (updateQuery.updateQuery) {
                     case 'first_name': case 'last_name': 
                         queryDbSimplified(updateEmployeeNameQuery(updateQuery.updateQuery, choice.employeeProp, input.employeeValue), updateValue.updateValue)
                     break;
-                    case 'salary': case 'title':
-
+                    case 'salary':
+                        queryDbSimplified(updateEmployeeSalary(choice.employeeProp, input.employeeValue), updateValue.updateValue)
                     break;
+                    default:
+                        console.error("Oops something went wrong!\nLet's try that again.")
                 }
     })
+        }
+        updateNameOrSalary();
+} else if (updateQuery.updateQuery == 'title') {
+inquirer
+    .prompt([
+        {
+            type: 'list',
+            name: 'updateTitle',
+            message: 'Choose the title to change for this employee',
+            choices: ['employee', 'manager']
+        }
+    ]).then(updateTitle => {
+            //TODO delete once debug done
+        console.log(updateTitle)
+        switch (updateTitle.updateTitle) {
+            case 'employee':
+                queryDbSimplified(updateEmployeeTitleToEmployee1(choice.employeeProp),input.employeeValue)   
+                queryDbSimplified(updateEmployeeTitleToEmployee2(choice.employeeProp),input.employeeValue)   
+            break;
+            case 'manager':
+                queryDbSimplified(updateEmployeeTitleToManager1(choice.employeeProp),input.employeeValue)   
+                queryDbSimplified(updateEmployeeTitleToManager2(choice.employeeProp),input.employeeValue)   
+            break;
+            default:
+                console.error("Oops something went wrong!\nLet's try that again.")
+        }
+    }) 
+} else if (updateQuery.updateQuery === 'department') {
+ inquirer
+    .prompt([
+        {
+            type: 'list',
+            name: 'updateDepartment',
+            message: 'Choose the department to change for this employee',
+            choices: ['Telecommunications', 'Troubleshooting', 'Database', 'Security', 'Software']
+        }
+    ]).then(updateDepartment => {
+        //Database ID number
+            const telecommunications = 1
+            const troubleshooting = 2
+            const database = 3 
+            const security = 4 
+            const software = 5
+        switch (updateDepartment.updateDepartment) {
+            case 'Telecommunications':
+                queryDbSimplified(updateEmployeeDepartment(telecommunications, choice.employeeProp), input.employeeValue)
+            break;
+            case 'Troubleshooting':
+                queryDbSimplified(updateEmployeeDepartment(troubleshooting, choice.employeeProp), input.employeeValue)
+            break;
+            case 'Database':
+                queryDbSimplified(updateEmployeeDepartment(database, choice.employeeProp), input.employeeValue)
+            break;
+            case 'Security':
+                queryDbSimplified(updateEmployeeDepartment(security, choice.employeeProp), input.employeeValue)
+            break;
+            case 'Software':
+                queryDbSimplified(updateEmployeeDepartment(software, choice.employeeProp), input.employeeValue)
+            break;
+            default:
+                console.error("Database either does not exist or has been deleted")
+        }
+
     })
+} else {
+    console.error("Oops something went wrong!\nLet's try that again.")
+}
+    })
+
      //   } 
     })
    });

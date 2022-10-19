@@ -71,16 +71,25 @@ WHERE e.id = 2 AND e.role_id = r.id
 
 -- Update title to manager
 UPDATE employee as e, role as r
-SET e.manager_id = 2
-WHERE e.id = 2 AND e.role_id = r.id;
+SET e.manager_id = e.id
+WHERE e.last_name = "Lott" AND e.role_id = r.id;
 UPDATE employee as e, role as r
 SET r.title = 'manager'
-WHERE e.id = 2 AND e.role_id = r.id;
+WHERE e.last_name = "Lott" AND e.role_id = r.id;
 
 -- Update title to employee
-UPDATE UPDATE employee as e, role as r
+UPDATE employee as e, role as r
+SET e.manager_id = NULL
+WHERE e.last_name = "Lott" AND e.role_id = r.id;
+UPDATE employee as e, role as r
+SET r.title = 'employee'
+WHERE e.last_name = "Lott" AND e.role_id = r.id;
+
+UPDATE employee as e, role as r
 SET e.manager_id = NULL
 WHERE e.id = 2 AND e.role_id = r.id;
 UPDATE employee as e, role as r
 SET r.title = 'employee'
 WHERE e.id = 2 AND e.role_id = r.id;
+
+
