@@ -43,24 +43,7 @@ const queryDbSimplified = (...args) => {
         .catch(err => console.error(err))
 };
 
-//works
-const showTotalBudgetbyDeparmentQuery = `
-SELECT name as department, sum(salary) as total_budget
-from role
-join department
-ON role.department_id = department.id
-AND department.name = ?
-`
-//works
-const showEmployeesByDepartmentQuery = `
-SELECT role_id as id, first_name, last_name, title, name as department
-FROM employee 
-JOIN role
-ON employee.role_id = role.id
-JOIN department
-ON role.department_id = department.id
-AND department.name = ?
-`
+
 //Update Queries 
 const updateEmployeeLNameQuery =  `
 UPDATE employee
@@ -131,6 +114,25 @@ const showRolesQuery = `SELECT id, title, salary, department_id FROM role`
 //View Employees
 const showEmployeesQuery = `SELECT id, first_name, last_name, role_id, manager_id FROM employee`
 
+//works
+const showTotalBudgetbyDeparmentQuery = `
+SELECT name as department, sum(salary) as total_budget
+from role
+join department
+ON role.department_id = department.id
+AND department.name = ?
+`
+//works
+const showEmployeesByDepartmentQuery = (departmentName) => `
+SELECT role_id as id, first_name, last_name, title, name as department
+FROM employee 
+JOIN role
+ON employee.role_id = role.id
+JOIN department
+ON role.department_id = department.id
+AND department.name = ${departmentName}
+`
+
 //Inquirer
 const cmsInquirer = () => {
 inquirer
@@ -139,30 +141,64 @@ inquirer
             type: 'list',
             name: 'option',
             message: 'What would you like to do?',
-            choices: ['View departments', 'View roles', 
-                      'View employees', 'View managers', 'debug']
+            choices: ['View', 'Update', 
+                      'Delete', 'Search', 'debug', 'Exit']
         }
-    ]).then(view => {
-        const viewOptions = () => { 
-        switch (view.option) {
-             case "View departments":
-                queryDbSimplified(showDepartmentsQuery);
-                break;
-             case "View roles":
-                queryDbSimplified(showRolesQuery);
-                break;
-             case "View employees":
-                queryDbSimplified(showEmployeesQuery);
-                break;
-            case "View managers":
-                queryDbSimplified(showManagersQuery);
-                break;
-            default: 
-                console.error("Oops something went wrong!\nLet's try that again.")
-            }
-        };
+    ]).then(answer => {
+        if (answer.option = "View") {
+            viewOptions();
+            const viewOptions = () => { 
+inquirer
+    .prompt([
+        {
+            type: 'list',
+            name: 'view',
+            message: "What would you like to view?",
+            choices: ["All", "Managers", "Employees", "Roles", "Departments, Employees by Department"]
+        }
+    ]).then(view => { 
+        switch (view.view) {
+        case "All":
+            queryDbSimplified(showAllQuery);
+            break;
+        case "Managers":
+            queryDbSimplified(showManagersQuery);
+            break;
+        case "Employees":
+            queryDbSimplified(showEmployeesQuery);
+            break;
+        case "Roles":
+            queryDbSimplified(showRolesQuery);
+            break;
+        case "Departments":
+           queryDbSimplified(showDepartmentsQuery);
+           break;
+        case "Employees by Department":
+            employeesByDepartment();
+            const employeesByDepartment = () => {
+                inquirer
+                    .prompt([{
+                        type: 'list',
+                        name: 'departmentView',
+                        message: "Which department of employees do you want to view from?",
+                        choices: ["Telecommunications", "Troubleshooting", "Database", "Security", "Software"]
+                    }
+                ]).then(departmentView => {
+                            queryDbSimplified(showEmployeesByDepartmentQuery(departmentView.departmentView))
+                    });
+                };
+            break;
+        default: 
+            console.error("Oops something went wrong!\nLet's try that again.")
+            };
+       })
+    }
+        
+       
+        }
+     else{}
         }).then(response => askAgain());
-}
+};
 
 
 const askAgain = () => {
