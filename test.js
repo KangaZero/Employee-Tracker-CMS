@@ -35,7 +35,6 @@ const queryDb = (...args) => new Promise((resolve, reject) => {
     })
 });
 
-
 const queryDbSimplified = (...args) => { 
     queryDb(...args)
     // `\n` added to avoid table rendering alongside confirm inquirer prompt
@@ -122,15 +121,16 @@ join department
 ON role.department_id = department.id
 AND department.name = ?
 `
+
 //works
-const showEmployeesByDepartmentQuery = (departmentName) => `
+const showEmployeesByDepartmentQuery = `
 SELECT role_id as id, first_name, last_name, title, name as department
 FROM employee 
 JOIN role
 ON employee.role_id = role.id
 JOIN department
 ON role.department_id = department.id
-AND department.name = ${departmentName}
+AND department.name = ?
 `
 
 //Inquirer
@@ -146,7 +146,6 @@ inquirer
         }
     ]).then(answer => {
         if (answer.option = "View") {
-            viewOptions();
             const viewOptions = () => { 
 inquirer
     .prompt([
@@ -154,7 +153,7 @@ inquirer
             type: 'list',
             name: 'view',
             message: "What would you like to view?",
-            choices: ["All", "Managers", "Employees", "Roles", "Departments, Employees by Department"]
+            choices: ["All", "Managers", "Employees", "Roles", "Departments", "Employees by Department", "Total Budget by Department"]
         }
     ]).then(view => { 
         switch (view.view) {
@@ -174,7 +173,6 @@ inquirer
            queryDbSimplified(showDepartmentsQuery);
            break;
         case "Employees by Department":
-            employeesByDepartment();
             const employeesByDepartment = () => {
                 inquirer
                     .prompt([{
@@ -184,20 +182,38 @@ inquirer
                         choices: ["Telecommunications", "Troubleshooting", "Database", "Security", "Software"]
                     }
                 ]).then(departmentView => {
-                            queryDbSimplified(showEmployeesByDepartmentQuery(departmentView.departmentView))
-                    });
+                            queryDbSimplified(showEmployeesByDepartmentQuery, departmentView.departmentView)
+                    }).then(response => askAgain());
                 };
+            employeesByDepartment();
+            break;
+        case "Total Budget by Department":
+            const totalBudgetByDepartment = () => {
+                inquirer
+                    .prompt([{
+                        type: 'list',
+                        name: 'budgetView',
+                        message: "Which department do you want to view the total budget from?",
+                        choices: ["Telecommunications", "Troubleshooting", "Database", "Security", "Software"]
+                    }
+                ]).then(budgetView => {
+                        queryDbSimplified(showTotalBudgetbyDeparmentQuery, budgetView.budgetView)
+                }).then(response => askAgain());
+            };
+            totalBudgetByDepartment();
             break;
         default: 
             console.error("Oops something went wrong!\nLet's try that again.")
             };
        })
     }
-        
-       
+    viewOptions();
         }
-     else{}
-        }).then(response => askAgain());
+     else{
+        console.log("add Update Delete Search debug Exit'")
+     }
+        })
+        // .then(response => askAgain());
 };
 
 
