@@ -107,19 +107,19 @@ WHERE e.${conditionProp} = ? AND e.role_id = r.id;
 `
 
 //Delete Queries
-const deleteEmployeeQuery = `
+const deleteEmployeeQuery = (conditionProp) =>`
 DELETE FROM employees
-where id = ? OR first_name = ? OR last_name = ?
+where ${conditionProp} = ? 
 `
 
-const deleteRolesQuery = `
+const deleteRolesQuery = (conditionProp) =>`
 DELETE FROM roles
-where id = ?
+where ${conditionProp} = ?
 `
 
-const deleteDepartmentsQuery = `
+const deleteDepartmentsQuery = (conditionProp) => `
 DELETE FROM department
-WHERE id = ? or name = ?
+WHERE ${conditionProp} = ?
 `
 
 //VIEW employee by managers
@@ -173,7 +173,11 @@ AND department.name = ?
 const isValidEmployeeQuery = (query) => `
 SELECT * 
 FROM employee
-where ${query} = ?
+JOIN role
+ON employee.role_id = role.id
+JOIN department
+ON role.department_id = department.id
+where employee.${query} = ?
 `
 //Inquirer
 const cmsInquirer = () => {
