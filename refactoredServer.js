@@ -92,18 +92,45 @@ const cmsInquirer = async () => {
                         }
                         totalBudgetByDepartment();
                         break;
-                            }
-                        
+                    default:
+                        console.error("Oops something went wrong!\nLet's try that again.")
+                            };
+                            //After view option is chosen, askAgain
+                        await askAgain();
                 }
              catch (err) {
                 res.status(400).json('Invalid view name')
             }
             }
             return viewOptions();
+        } else if (answer.option == "Update Employee") {
+
         }
+       
     } catch (err){
         console.log(err)
     }
 };
 
 cmsInquirer();
+
+const askAgain = async () => {
+    try {
+   const confirm = await inquirer
+        .prompt([
+            {
+                type: 'confirm',
+                name: 'confirm',
+                message: 'Would you like to continue using the CMS?\n'
+            },
+        ])
+        if (confirm.confirm) {
+            return cmsInquirer();
+        } else {
+            console.log("Thanks for using KangaZero's Employee Tracker CMS!\n See you next time!"); 
+            process.exit();
+        }
+    } catch (err) {
+        console.error(err);
+    };
+    };
