@@ -3,7 +3,7 @@ const {queryDb, queryDbSimplified} = require('./mysqlQuery');
 const cTable = require('console.table');
 
 class View {
-    viewAll() {
+    all() {
         const viewAllQuery = `
         SELECT *
         FROM employee
@@ -15,7 +15,7 @@ class View {
         return queryDbSimplified(viewAllQuery);
     };
 
-    viewManagers() {
+    managers() {
         const viewManagersQuery = `
         SELECT manager_id, role_id, first_name, last_name, title
         FROM employee
@@ -27,7 +27,7 @@ class View {
         return queryDbSimplified(viewManagersQuery);
     };
 
-    viewDepartments() {
+    departments() {
         const viewDepartmentsQuery = `
         SELECT id, name 
         FROM department
@@ -36,54 +36,59 @@ class View {
         return queryDbSimplified(viewDepartmentsQuery);
     };
 
-    viewRoles() {
+    roles() {
         const viewRolesQuery = `
         SELECT id, title, salary, department_id 
         FROM role
         `
-        queryDbSimplified(viewRolesQuery);
+        return queryDbSimplified(viewRolesQuery);
     };
-}
 
-const test = new View 
-test.viewDepartments()
-test.viewAll()
-test.viewRoles()
-// test.viewManagers() WORKS
+    employees() {
+        const viewEmployeesQuery = `
+        SELECT id, first_name, last_name, role_id, manager_id 
+        FROM employee
+        `
 
+        return queryDbSimplified(viewEmployeesQuery);
+    };
 
+    totalBudgetByDepartment(conditionValue) {
+        const viewTotalBudgetbyDeparmentQuery = `
+        SELECT name as department, sum(salary) AS total_budget
+        FROM role
+        JOIN department
+        ON role.department_id = department.id
+        AND department.name = ?
+        `
+        return queryDbSimplified(viewTotalBudgetbyDeparmentQuery, conditionValue);
+    };
 
-//View roles
+    employeesbyDepartment(conditionValue) {
+        const viewEmployeesByDepartmentQuery = `
+        SELECT role_id as id, first_name, last_name, title, name as department
+        FROM employee 
+        JOIN role
+        ON employee.role_id = role.id
+        JOIN department
+        ON role.department_id = department.id
+        AND department.name = ?
+        `
+        return queryDbSimplified(viewEmployeesByDepartmentQuery, conditionValue);
+    };
 
-//View Employees
-const showEmployeesQuery = `SELECT id, first_name, last_name, role_id, manager_id FROM employee`
+    isValidEmployee(conditionProp, conditionValue) {
+        const isValidEmployeeQuery = (conditionProp) => `
+        SELECT * 
+        FROM employee
+        JOIN role
+        ON employee.role_id = role.id
+        JOIN department
+        ON role.department_id = department.id
+        where employee.${conditionProp} = ?
+        `
+        queryDbSimplified(isValidEmployeeQuery(conditionProp), conditionValue);
+    };
+};
 
-//works
-const showTotalBudgetbyDeparmentQuery = `
-SELECT name as department, sum(salary) AS total_budget
-FROM role
-JOIN department
-ON role.department_id = department.id
-AND department.name = ?
-`
-
-//works
-const showEmployeesByDepartmentQuery = `
-SELECT role_id as id, first_name, last_name, title, name as department
-FROM employee 
-JOIN role
-ON employee.role_id = role.id
-JOIN department
-ON role.department_id = department.id
-AND department.name = ?
-`
-
-const isValidEmployeeQuery = (query) => `
-SELECT * 
-FROM employee
-JOIN role
-ON employee.role_id = role.id
-JOIN department
-ON role.department_id = department.id
-where employee.${query} = ?
-`
+module.exports = View; 
