@@ -5,24 +5,24 @@ const cTable = require('console.table');
 class Delete {
     employee(conditionProp, conditionValue) {
         const deleteEmployeeQuery = `
-        DELETE FROM employees
+        DELETE FROM employee
         where ${conditionProp} = ? 
         `
         return queryDbSimplified(deleteEmployeeQuery, conditionValue);
     };
 
-    department(conditionProp, conditionValue) {
+    department(conditionValue) {
         const deleteDepartmentQuery = `
-        DELETE FROM roles
-        WHERE ${conditionProp} = ?
+        DELETE FROM deparment
+        WHERE name = ?
         `
         return queryDbSimplified(deleteDepartmentQuery, conditionValue);
     };
 
-    role(conditionProp, conditionValue) {
+    role(conditionValue) {
         const deleteRolesQuery =`
-        DELETE FROM roles
-        where ${conditionProp} = ?
+        DELETE FROM role
+        where title = ?
         `
         return queryDbSimplified(deleteRolesQuery, conditionValue);
     };

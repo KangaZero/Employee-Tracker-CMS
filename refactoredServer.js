@@ -2,7 +2,8 @@ const db = require('./config/connection');
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
-const tty = require('tty');
+
+
 
 //queries
 const View = require('./helpers/queries/viewQuery');
@@ -22,7 +23,7 @@ const cmsInquirer = async () => {
                         name: 'option',
                         message: 'What would you like to do?',
                         choices: ['View', 'Update Employee', 
-                                'Delete', 'Search', 'debug', 'Exit']
+                                'Delete', 'Exit']
                     }
                 ])
          //TODO delete once debug done
@@ -68,7 +69,7 @@ const cmsInquirer = async () => {
                                 ])
                                 viewQuery.employeesbyDepartment(departmentView.departmentView);
                         } catch (err) {
-                            res.status(400).json('Invalid department name')
+                            console.error('Invalid department name')
                         }
                     }
                         employeesByDepartment();
@@ -85,17 +86,16 @@ const cmsInquirer = async () => {
                                     choices: ["Telecommunications", "Troubleshooting", "Database", "Security", "Software"]
                                     }
                             ])
-                            viewQuery.totalBudgetByDepartment(budgetView.budgetView);
-
+                             viewQuery.totalBudgetByDepartment(budgetView.budgetView);
                         } catch (err) {
-                            res.status(400).json('Invalid department name')
+                            console.error('Invalid department name')
                         }
                         }
                         totalBudgetByDepartment();
                         break;
                     default:
                         console.error("Oops something went wrong!\nLet's try that again.")
-                            };
+                            }; //end of switch statement for view
                             await askAgain();
                         }
                         catch (err) {
@@ -169,7 +169,7 @@ const cmsInquirer = async () => {
                 } catch (err) {
                     console.log(err);
                     await askAgain(); 
-                }    
+                }
                 }
                 return updateNameOrSalary();
             } else if (updateProp.updateProp == "title") {
@@ -258,8 +258,118 @@ const cmsInquirer = async () => {
         
     }; //end of updateOption();
         return updateOption();
+        } else if (answer.option == "Delete") {
+            const deleteOption = async () => {
+                try {
+                    const deleteProp = await inquirer
+                        .prompt([
+                            {
+                                type: 'list',
+                                name: 'deleteProp',
+                                message: 'What would you like to delete?',
+                                choices: ['Employee', 'Role', 'Department']
+                            }
+                        ])
+                        if (deleteProp.deleteProp == "Employee") {
+                            const deleteEmployee = async () => {
+                                    try {  
+                                const employeeProp = await inquirer
+                                .prompt([
+                                    {
+                                        type: 'list',
+                                        name: 'employeeProp',
+                                        message: "Pick search term for employee",
+                                        choices: ['id', 'first_name', 'last_name']
+                                    }
+                        ])
+                        //TODO delete once debug done
+                        console.log(employeeProp)
+                        const employeeValue = await inquirer
+                        .prompt([
+                            {
+                                type: 'input',
+                                name: 'employeeValue',
+                                message: `Enter employee's ${employeeProp.employeeProp} `
+                            }
+                        ])
+                        //TODO delete once debug done
+                        console.log(employeeValue)
+                        const isValid = viewQuery.isValidEmployee(employeeProp.employeeProp, employeeValue.employeeValue);
+                        //TODO get boolean from isValid
+                        //if (console.log(isValid)) {
+                        console.log(isValid)
+                        const deleteConfirm = await inquirer
+                            .prompt([
+                                {   
+                                    type: 'confirm',
+                                    name: 'deleteConfirm',
+                                    message: 'Are you sure you want to delete this employee?'
+                                }
+                            ]);
+
+                            deleteConfirm.deleteConfirm ?
+                             deleteQuery.employee(employeeProp.employeeProp, employeeValue.employeeValue) : askAgain();
+
+                                } catch (err) {
+                                    console.error(err);
+                                }
+                            }; //end of deleteEmployee
+                            deleteEmployee();
+                            } else if (deleteProp.deleteProp == "Role" ){
+                            const deleteRole = async () => {
+                                try {
+                                    const roleProp = await inquirer
+                                    .prompt([
+                                        {
+                                            type: 'list',
+                                            name: 'roleProp',
+                                            message: "Pick which role to delete",
+                                            choices: ['employee', 'manager']
+                                        }
+                                    ]);
+                                         deleteQuery.role(roleProp.roleProp)
+                                        return console.log(`${roleProp.roleProp} role deleted`)
+                                } catch (err) {
+                                    console.log(err);
+                                };
+                            }
+                            return deleteRole();
+                            } else if (deleteProp.deleteProp == "Department") {
+                                const deleteDepartment = async () => {
+                                    try {
+                                        const departmentValue = await inquirer
+                                        .prompt([
+                                            {
+                                                type: 'list',
+                                                name: 'departmentValue',
+                                                message: 'Which department would you like to delete?',
+                                                choices: ['Telecommunications', 'Troubleshooting', 'Database', 'Security', 'Software']
+                                            }
+                                        ]);
+                                        deleteQuery.department(departmentValue.deleteValue);
+                                        return console.log(`${departmentValue.departmentValue} deparment deleted`)
+                                    } catch (err) {
+                                        console.error(err);
+                                    }
+                                };
+                                return deleteDepartment();
+                            } else {
+                                console.log("Error!")
+                                await askAgain();
+                            }
+                            await askAgain();
+                        }
+
+                 catch (err) {
+                console.error(err);
+                await askAgain();
+                };
+            };
+        return deleteOption();
+        } else { //exit option
+            console.log("Thanks for using KangaZero's Employee Tracker CMS!\n See you next time!"); 
+            process.exit();
         }
-       
     } catch (err) {
         console.log(err);
     }
