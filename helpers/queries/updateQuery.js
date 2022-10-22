@@ -15,7 +15,7 @@ class Update {
     employeeDepartment(departmentId, conditionProp, conditionValue) {
         const updateEmployeeDepartmentQuery = `
         UPDATE employee AS e, role AS r
-        SET r.department_id = ${departmentId}
+        SET r.department_id = ${parseInt(departmentId)}
         WHERE e.${conditionProp} = ? 
         AND e.role_id = r.id ;
         `

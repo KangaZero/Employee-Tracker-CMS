@@ -172,7 +172,7 @@ const cmsInquirer = async () => {
                 }    
                 }
                 return updateNameOrSalary();
-            } else if (updateProp.updateProp = "title") {
+            } else if (updateProp.updateProp == "title") {
                 const updateTitle = async () => {
                 try {
                     const updateTitleValue = await inquirer
@@ -202,8 +202,51 @@ const cmsInquirer = async () => {
                 } 
                 }
                 return updateTitle();
-            } else if (updateProp.updateProp = "department") {
-                
+            } else if (updateProp.updateProp == "department") {
+                const updateDepartment = async () => {
+                    try{
+                        const department = await inquirer
+                        .prompt([
+                            {
+                                type: 'list',
+                                name: 'department',
+                                message: 'Choose the department to change for this employee',
+                                choices: ['Telecommunications', 'Troubleshooting', 'Database', 'Security', 'Software']
+                            }
+                        ])
+                            //Database ID number
+                            const telecommunications = 1
+                            const troubleshooting = 2
+                            const database = 3 
+                            const security = 4 
+                            const software = 5
+                        
+                        switch(department.department) {
+                            case 'Telecommunications':
+                                updateQuery.employeeDepartment(telecommunications, employeeProp.employeeProp, employeeValue.employeeValue);
+                            break;
+                            case 'Troubleshooting':
+                                updateQuery.employeeDepartment(troubleshooting, employeeProp.employeeProp, employeeValue.employeeValue);
+                            break;
+                            case 'Database':
+                                updateQuery.employeeDepartment(database, employeeProp.employeeProp, employeeValue.employeeValue);
+                            break;
+                            case 'Security':
+                                updateQuery.employeeDepartment(security, employeeProp.employeeProp, employeeValue.employeeValue);
+                            break;
+                            case 'Software':
+                                updateQuery.employeeDepartment(software, employeeProp.employeeProp, employeeValue.employeeValue);
+                            break;
+                            default:
+                                console.error("Database either does not exist or has been deleted")
+                        }
+                        await askAgain(); 
+                    } catch (err) {
+                        console.log(err);
+                        await askAgain(); 
+                    }
+                }
+                return updateDepartment();
             }
           //  } else  {
            //     console.error("Invalid input")

@@ -92,4 +92,9 @@ UPDATE employee as e, role as r
 SET r.title = 'employee'
 WHERE e.id = 2 AND e.role_id = r.id;
 
+   UPDATE employee AS e, role AS r
+        SET r.department_id = 3
+        WHERE e.id = 1 
+        AND e.role_id = r.id ;
+        `
 
