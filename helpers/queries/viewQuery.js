@@ -1,6 +1,7 @@
 const db = require("../../config/connection");
 const {queryDb, queryDbSimplified} = require('./mysqlQuery');
 const cTable = require('console.table');
+const { json } = require("express");
 
 class View {
     all() {
@@ -89,6 +90,34 @@ class View {
         `
         queryDbSimplified(isValidEmployeeQuery(conditionProp), conditionValue);
     };
+
+    test(conditionProp, conditionValue) {
+        const isValidEmployeeQuery = (conditionProp) => `
+        SELECT * 
+        FROM employee
+        JOIN role
+        ON employee.role_id = role.id
+        JOIN department
+        ON role.department_id = department.id
+        where employee.${conditionProp} = ?
+        `
+        db.query(isValidEmployeeQuery(conditionProp), conditionValue, (err, results) => {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log(results)
+            }
+        })
+    }
 };
+
+const test = new View;
+isTrue = () =>{
+    const isValid =test.test('id', 1)
+   console.log(typeof(isValid))
+}
+// isTrue()
+// test.isValidEmployee('id', 1)
+//test.test('id', 124)
 
 module.exports = View; 

@@ -32,7 +32,7 @@ class Update {
         return queryDbSimplified(updateEmployeeSalaryQuery, updateValue);
     };
 
-    employeeTitleToManger(conditionProp, conditionValue) {
+    employeeTitleToManager(conditionProp, conditionValue) {
         const toManagerQuery1 = `
         UPDATE employee as e, role as r
         SET e.manager_id = e.id
@@ -49,7 +49,7 @@ class Update {
         return;
     };
 
-    employeeTileToEmployee(conditionProp, conditionValue) {
+    employeeTitleToEmployee(conditionProp, conditionValue) {
         const toEmployeequery1 =`
         UPDATE employee as e, role as r
         SET e.manager_id = NULL
