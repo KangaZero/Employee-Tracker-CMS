@@ -43,18 +43,23 @@ const cmsInquirer = async () => {
                 switch (view.view) {
                     case "All":
                          viewQuery.all();
+                         return askAgain();
                         break;
                     case "Managers":
                          viewQuery.managers();
+                         return askAgain();
                         break;
                     case "Employees":
-                         viewQuery.employees();
+                        viewQuery.employees();
+                        return askAgain();
                         break;
                     case "Roles":
                          viewQuery.roles();
+                         return askAgain();
                         break;
                     case "Departments":
                         viewQuery.departments();
+                        return askAgain();
                         break;
                     case "Employees by Department":
                             const employeesByDepartment = async () => {
@@ -68,6 +73,8 @@ const cmsInquirer = async () => {
                                     }
                                 ])
                                 viewQuery.employeesbyDepartment(departmentView.departmentView);
+                         return askAgain();
+
                         } catch (err) {
                             console.error('Invalid department name')
                         }
@@ -87,6 +94,8 @@ const cmsInquirer = async () => {
                                     }
                             ])
                              viewQuery.totalBudgetByDepartment(budgetView.budgetView);
+                         return askAgain();
+
                         } catch (err) {
                             console.error('Invalid department name')
                         }
@@ -95,9 +104,9 @@ const cmsInquirer = async () => {
                         break;
                     default:
                         console.error("Oops something went wrong!\nLet's try that again.")
-                            }; //end of switch statement for view
-                            await askAgain();
-                        }
+                            } //end of switch statement for view
+                           // await askAgain();
+                        } 
                         catch (err) {
                             res.status(400).json('Invalid view name')
                             await askAgain();
@@ -309,7 +318,7 @@ const cmsInquirer = async () => {
 
                             deleteConfirm.deleteConfirm ?
                              deleteQuery.employee(employeeProp.employeeProp, employeeValue.employeeValue) : askAgain();
-
+                             return askAgain();
                                 } catch (err) {
                                     console.error(err);
                                 }
@@ -328,7 +337,8 @@ const cmsInquirer = async () => {
                                         }
                                     ]);
                                          deleteQuery.role(roleProp.roleProp)
-                                        return console.log(`${roleProp.roleProp} role deleted`)
+                                         console.log(`${roleProp.roleProp} role deleted`)
+                                         return askAgain();
                                 } catch (err) {
                                     console.log(err);
                                 };
@@ -346,8 +356,9 @@ const cmsInquirer = async () => {
                                                 choices: ['Telecommunications', 'Troubleshooting', 'Database', 'Security', 'Software']
                                             }
                                         ]);
-                                        deleteQuery.department(departmentValue.deleteValue);
-                                        return console.log(`${departmentValue.departmentValue} deparment deleted`)
+                                        deleteQuery.department(departmentValue.departmentValue);
+                                        console.log(`${departmentValue.departmentValue} deparment deleted`);
+                                        return askAgain();
                                     } catch (err) {
                                         console.error(err);
                                     }
@@ -357,10 +368,7 @@ const cmsInquirer = async () => {
                                 console.log("Error!")
                                 await askAgain();
                             }
-                            await askAgain();
-                        }
-
-                 catch (err) {
+                        }  catch (err) {
                 console.error(err);
                 await askAgain();
                 };

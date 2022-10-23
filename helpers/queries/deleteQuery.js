@@ -13,7 +13,7 @@ class Delete {
 
     department(conditionValue) {
         const deleteDepartmentQuery = `
-        DELETE FROM deparment
+        DELETE FROM department
         WHERE name = ?
         `
         return queryDbSimplified(deleteDepartmentQuery, conditionValue);
