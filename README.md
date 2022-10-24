@@ -98,8 +98,14 @@ Walkthrough Link : (https://drive.google.com/file/d/11zNT8mkoTAlcn6z6jO6mIN-a0-n
 Here are some of the resources used as reference to build this personal portfolio
 
 * [Choose an Open Source License](https://choosealicense.com)
-
-
+* [mySQL server doc](https://dev.mysql.com/doc/refman/8.0/en/)
+* [mySQL2 npm doc](https://www.npmjs.com/package/mysql2)
+* [dotenv npm doc](https://www.npmjs.com/package/dotenv)
+* [console.table npm doc](https://www.npmjs.com/package/console.table)
+* [try & catch doc](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch)
+* [classes doc](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
+* [process.exit()](https://stackoverflow.com/questions/5266152/how-to-exit-in-node-js)
+* [sql joins](https://www.w3schools.com/sql/sql_join.asp)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
